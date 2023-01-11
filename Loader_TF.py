@@ -30,9 +30,11 @@ class Base_Loader:
     def __init__(self,*,path,cpu,image_size=(256,256),batch_size) :
         
         self.Cpu = cpu
-        self.Category = np.array( sorted([ i.split("/")[-1] for i in glob(path + "/*") ]) )
+        
+        Category = sorted([ i.split("/")[-1] for i in glob(path + "/*") ]) 
+        self.Category =  {Category[i] : i for i in range(len(Category))}
         self.FileName = tf.constant(glob(path + "/*/*"))
-        self.Label    = tf.constant([i.split("/")[-2] for i in glob(path + "/*/*")])
+        self.Label    = tf.constant([self.Category[i.split("/")[-2]] for i in glob(path + "/*/*")])
         self.Total = self.FileName.shape[0]
         self.Saved = 0
         self.Batch_Size = batch_size
@@ -42,6 +44,8 @@ class Base_Loader:
         image_string = tf.io.read_file(path)           
         image_decoded = tf.image.decode_jpeg(image_string)  
         image_resized = tf.image.resize(image_decoded, self.Image_Size) / 255.0
+        
+        label = self.Category[label]
         return image_resized , label
 
     def Get(self,begin = None,end = None):
@@ -65,4 +69,4 @@ class My_Loader(Base_Loader) :
         image_string = tf.io.read_file(path)           
         image_decoded = tf.image.decode_jpeg(image_string)  
         image_resized = tf.image.resize(image_decoded, [256, 256]) / 255.0
-        return image_resized,label
+        return image_resized ,label
