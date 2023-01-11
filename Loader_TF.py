@@ -66,11 +66,10 @@ class Base_Loader:
         self.Dataset = self.Dataset.batch(batch_size = self.Batch_Size)
         self.Dataset = self.Dataset.prefetch(self.Cpu)
         
-        
-        
+
 class My_Loader(Base_Loader) :
     def TFM(self, path,label):
-        image_string = tf.io.read_file(path)           
+        image_string = tf.io.read_file(path)
         image_decoded = tf.image.decode_jpeg(image_string)  
-        image_resized = tf.image.resize(image_decoded, [256, 256]) / 255.0
+        image_resized = tf.image.resize(image_decoded, self.Image_Size) / 255.0
         return image_resized ,label
