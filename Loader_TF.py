@@ -33,8 +33,12 @@ class Base_Loader:
         
         Category = sorted([ i.split("/")[-1] for i in glob(path + "/*") ]) 
         self.Category =  {Category[i] : i for i in range(len(Category))}
-        self.FileName = tf.constant(glob(path + "/*/*"))
-        self.Label    = tf.constant([self.Category[i.split("/")[-2]] for i in glob(path + "/*/*")])
+        FileName = glob(path + "/*/*")
+        np.random.shuffle(FileName)
+        
+        self.FileName = tf.constant(FileName)
+        self.Label    = tf.constant([self.Category[i.split("/")[-2]] for i in FileName])
+        
         self.Total = self.FileName.shape[0]
         self.Saved = 0
         self.Batch_Size = batch_size
